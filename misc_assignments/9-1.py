@@ -5,7 +5,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
-import time
 
 def naver_blog_url(keyword: str, pageNo: int = 1) -> str:
     return f"https://section.blog.naver.com/Search/Blog.naver?pageNo=1&orderBy=sim&keyword={keyword}"
@@ -20,6 +19,7 @@ driver.implicitly_wait(30)
 
 blogs = driver.find_elements(By.CSS_SELECTOR, "#content > section > div.area_list_search > div")
 blog_profiles = list(map(lambda elem: elem.text.replace('\n', ' '), blogs))
-print('\n'.join(blog_profiles))
+blog_profiles_as_text = '\n'.join(blog_profiles)
 
-time.sleep(30)  # 정상적으로 나오는지 확인해보세요!
+with open("blogs.txt", "w") as fp:
+    fp.write(blog_profiles_as_text)
