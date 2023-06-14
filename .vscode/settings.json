@@ -1,0 +1,17 @@
+{
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.autopep8"
+  },
+  "editor.semanticHighlighting.enabled": true,
+  "python.languageServer": "Pylance",
+  "editor.quickSuggestions": {
+    "other": "on",
+    "comments": "off",
+    "strings": "off"
+  },
+  "editor.suggestOnTriggerCharacters": true,
+  "editor.wordBasedSuggestions": true,
+  "editor.parameterHints.enabled": true,
+  "python.autoComplete.addBrackets": true,
+  "python.formatting.provider": "none"
+}
