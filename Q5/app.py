@@ -105,13 +105,14 @@ for url in full_urls:
     contents = [*contents, _contents[0:comment_cnt]]
     dates = [*dates, _dates[0:comment_cnt]]
 
-print(json.dumps(full_urls, indent=4, ensure_ascii=False))
-print(json.dumps(names, indent=4, ensure_ascii=False))
-print(json.dumps(dates, indent=4, ensure_ascii=False))
-print(json.dumps(contents, indent=4, ensure_ascii=False))
-print(json.dumps(list(map(len, names)), indent=4, ensure_ascii=False))
-print(json.dumps(list(map(len, dates)), indent=4, ensure_ascii=False))
-print(json.dumps(list(map(len, contents)), indent=4, ensure_ascii=False))
+# DEBUG CODE:
+# print(json.dumps(full_urls, indent=4, ensure_ascii=False))
+# print(json.dumps(names, indent=4, ensure_ascii=False))
+# print(json.dumps(dates, indent=4, ensure_ascii=False))
+# print(json.dumps(contents, indent=4, ensure_ascii=False))
+# print(json.dumps(list(map(len, names)), indent=4, ensure_ascii=False))
+# print(json.dumps(list(map(len, dates)), indent=4, ensure_ascii=False))
+# print(json.dumps(list(map(len, contents)), indent=4, ensure_ascii=False))
 
 xlsx_path = f"{filepath}.xlsx"
 csv_path = f"{filepath}.csv"
