@@ -1,7 +1,9 @@
 from typing import Union, List
 from dataclasses import dataclass
 from datetime import datetime
+from functools import reduce
 import requests
+import math
 import pandas as pd
 import json
 
@@ -47,15 +49,14 @@ class Post:
     logNo: int
     gdid: str
 
-
-def query_post(keyword: str, page_no: int, count: int, startDt: str, endDt: str) -> Union[dict, Exception]:
+def single_query(keyword: str, page_no: int, startDt: str, endDt: str) -> Union[dict, Exception]:
     response = requests.get(
         "https://section.blog.naver.com/ajax/SearchList.naver",
         headers={
             "Referer": "https://section.blog.naver.com/Search/Post.naver?pageNo=1&rangeType=ALL&orderBy=sim&keyword=%EC%88%98%EB%AC%B8%EB%8B%AC%EA%B8%B0%EC%B2%B4%ED%97%98"
         },
         params={
-            "countPerPage": count,
+            "countPerPage": 20,
             "currentPage": page_no,
             "keyword": keyword,
             "startDate": startDt,
@@ -66,8 +67,6 @@ def query_post(keyword: str, page_no: int, count: int, startDt: str, endDt: str)
     # 요청 실패 시, AssertionError 반환
     if not response.ok:
         return AssertionError("요청을 성공적으로 실행하지 못 했습니다.")
-
-    # print(response.text)
 
     # 네이버는 응답에서 5글자의 접미사를 추가하여 JSON 텍스트를 반환하기 때문에
     # 접미사 5글자를 생략한 텍스트를 다시 json으로 해석해야 합니다.
@@ -82,6 +81,29 @@ def query_post(keyword: str, page_no: int, count: int, startDt: str, endDt: str)
 
     return _json
 
+def query_post(keyword: str, count: str, startDt: str, endDt: str) -> Union[dict, Exception]:
+    assert str.isdigit(count), "올바르지 않은 '페이지 수' 요소"
+
+    _count = int(count)
+
+    first_page = 1
+    last_page = math.ceil(_count / 20)
+
+    # 복수 페이지 응답 가져오기
+    responses = [
+        single_query(keyword, page_no, startDt, endDt) for page_no in range(first_page, last_page + 1)
+    ]
+    
+    # 실패한 응답 제외하고 병합
+    filtered_responses = list(filter(lambda response: not isinstance(response, Exception), responses))
+
+    # 병합 과정에서 results의 검색 결과 항목만 걸러내기
+    extracted_list = list(map(lambda response: response["result"]["searchList"], filtered_responses))    
+
+    merged_responses = list(reduce(lambda acc, cur: [*acc, *cur], extracted_list, []))
+        
+    return merged_responses
+
 """
 data 문자열 내에서 keywords의 요소 중 얼마나 포함되어 있는가를 반환함
 """
@@ -92,23 +114,15 @@ print('='*100)
 print("연습문제 6-5: 블로그 크롤러 : 여러건의 네이버 블로그 정보 추출하여 저장하기".center(65))
 print('='*100)
 
-# keyword = input("1.크롤링할 키워드는 무엇입니까?(예:여행): ")
-# must_contains = input(
-#     "2.결과에서 반드시 포함하는 단어를 입력하세요(예:국내,바닷가)\n(여러개일 경우 ,로 구분해서 입력하고 없으면 엔터를 입력하세요): ")
-# must_excludes = input(
-#     "3.결과에서 제외할 단어를 입력하세요(예:분양권,해외)\n(여러개일 경우 ,로 구분해서 입력하고 없으면 엔터 입력하세요): ")
-# startDt = input("4.조회 시작일자 입력(예:2017-01-01):")
-# endDt = input("5.조회 종료일자 입력(예:2017-12-31):")
-# crawlCnt = input("6.크롤링 할 건수는 몇건입니까?(최대 1000건): ") or "5"
-# filepath = input("7.파일을 저장할 폴더명만 쓰세요(예:c:\\temp\\):")
-
-keyword = "여행"
-must_contains=[]
-must_excludes=[]
-startDt="2017-01-01"
-endDt="2017-12-31"
-crawlCnt=10
-filepath="./file"
+keyword = input("1.크롤링할 키워드는 무엇입니까?(예:여행): ")
+must_contains = input(
+    "2.결과에서 반드시 포함하는 단어를 입력하세요(예:국내,바닷가)\n(여러개일 경우 ,로 구분해서 입력하고 없으면 엔터를 입력하세요): ")
+must_excludes = input(
+    "3.결과에서 제외할 단어를 입력하세요(예:분양권,해외)\n(여러개일 경우 ,로 구분해서 입력하고 없으면 엔터 입력하세요): ")
+startDt = input("4.조회 시작일자 입력(예:2017-01-01):")
+endDt = input("5.조회 종료일자 입력(예:2017-12-31):")
+crawlCnt = input("6.크롤링 할 건수는 몇건입니까?(최대 1000건): ") or "5"
+filepath = input("7.파일을 저장할 폴더명만 쓰세요(예:c:\\temp\\):")
 
 # filepath 가공
 xlsx_path = f"{filepath}.xlsx"
@@ -118,13 +132,14 @@ txt_path = f"{filepath}.txt"
 데이터 요청 및 결과 가져오기 -> dataclass 구현체에 저장
 """
 
-results = query_post(keyword, 1, crawlCnt, startDt, endDt)
+results = query_post(keyword, crawlCnt, startDt, endDt)
 
 if isinstance(results, AssertionError):
     print("파라미터에 문제가 있어 요청이 정상적으로 수행되지 않았습니다.")
     print(results)
 
-raw_posts = results["result"]["searchList"]
+# raw_posts = results["result"]["searchList"]
+raw_posts = results
 posts: List[Post] = list(map(lambda post: Post(
         post["domainIdOrBlogId"],
         post["nickName"],
