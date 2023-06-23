@@ -31,8 +31,12 @@ driver.get("https://www.g2b.go.kr/index.jsp")
 driver.implicitly_wait(30)
 
 driver.find_element(By.CSS_SELECTOR, "#bidNm").send_keys(keyword)
-driver.find_element(By.CSS_SELECTOR, "#fromBidDt").send_keys(startDt)
-driver.find_element(By.CSS_SELECTOR, "#toBidDt").send_keys(endDt)
+driver.execute_script(
+    f"""
+    document.querySelector("#fromBidDt").value = "{startDt}";
+    document.querySelector("#toBidDt").value = "{endDt}";
+    """
+)
 
 driver.execute_script("""
     javascript:search1(); // 검색 함수 실행
