@@ -1,10 +1,15 @@
+"""
+    네이버에서 특정 검색어를 검색하여
+    최상단 10개의 포스트를 txt, csv, xlsx 형태로 저장하기
+"""
+
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium import webdriver
 import pandas as pd
 import time
 
 print("=" * 100)
-print("연습 문제 : 저장할 내용을 목록으로 만들어서 xlsx, csv 형식으러 저장하기")
+print("연습 문제 : 저장할 내용을 목록으로 만들어서 xlsx, csv 형식으로 저장하기")
 print("=" * 100)
 
 keyword = input("1. 크롤링 할 키워드는 무엇입니까?: ")
