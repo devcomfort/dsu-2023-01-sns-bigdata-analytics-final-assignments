@@ -3,14 +3,14 @@ attrs==23.1.0
 autopep8==2.0.2
 beautifulsoup4==4.12.2
 bs4==0.0.1
-certifi==2023.5.7
+certifi==2023.7.22
 cffi==1.15.1
 charset-normalizer==3.1.0
 colorama==0.4.6
 et-xmlfile==1.1.0
 exceptiongroup==1.1.1
 h11==0.14.0
-idna==3.4
+idna==3.7
 numpy==1.24.3
 openpyxl==3.1.2
 outcome==1.2.0
@@ -32,6 +32,6 @@ tqdm==4.65.0
 trio==0.22.0
 trio-websocket==0.10.2
 tzdata==2023.3
-urllib3==2.0.2
+urllib3==2.0.7
 webdriver-manager==3.8.6
 wsproto==1.2.0
